@@ -1,6 +1,6 @@
 app_name = "mu_gold"
 app_title = "Mu Gold"
-app_publisher = "MU"
+app_publisher = "Mu Gold"
 app_description = "Mu Gold"
 app_email = "nada.khaled031.nk@gmail.com"
 app_license = "mit"
