@@ -247,3 +247,33 @@ app_license = "mit"
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
 
+# Fixtures
+# --------
+# These records are exported to JSON and re-imported on every bench migrate
+# fixtures = [
+#     {
+#         "dt": "Custom Field",
+#         "filters": [
+#             ["dt", "=", "Sales Invoice"],
+#             ["fieldname", "in", [
+#                 "is_gold_invoice",
+#                 "gold_section",
+#                 "gold_item",
+#                 "gold_carat",
+#                 "gold_weight",
+#                 "equivalent_21",
+#                 "gold_col_break",
+#                 "price_per_gram",
+#                 "total_workmanship",
+#                 "source_warehouse",
+#                 "target_warehouse",
+#                 "gold_status_section",
+#                 "gold_movement_created",
+#                 "gold_movement_status",
+#                 "gold_col_break_2",
+#                 "stock_entry_ref",
+#                 "journal_entry_ref",
+#             ]],
+#         ]
+#     },
+# ]

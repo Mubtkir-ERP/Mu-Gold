@@ -1,0 +1,219 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-05-05 02:07:45.667447",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "date",
+  "customer",
+  "movement_type",
+  "col_break_1",
+  "reference_type",
+  "reference_name",
+  "gold_item",
+  "carat",
+  "sec_weights",
+  "actual_weight",
+  "equivalent_21_change",
+  "balance_after",
+  "col_break_2",
+  "source_warehouse",
+  "target_warehouse",
+  "sec_links",
+  "stock_entry_ref",
+  "journal_entry_ref",
+  "invoice_ref",
+  "payment_ref",
+  "col_break_3",
+  "notes",
+  "is_cancelled",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Customer",
+   "options": "Customer",
+   "reqd": 1
+  },
+  {
+   "fieldname": "movement_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Movement Type",
+   "options": "\nISSUE\nRECEIPT\nADJUSTMENT\nCONVERSION\nCANCELLATION",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "reference_type",
+   "fieldtype": "Link",
+   "label": "Reference Type",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "reference_name",
+   "fieldtype": "Dynamic Link",
+   "label": "Reference Name",
+   "options": "reference_type"
+  },
+  {
+   "fieldname": "gold_item",
+   "fieldtype": "Link",
+   "label": "Gold Item",
+   "options": "Item"
+  },
+  {
+   "fieldname": "carat",
+   "fieldtype": "Data",
+   "label": "Carat"
+  },
+  {
+   "fieldname": "sec_weights",
+   "fieldtype": "Section Break",
+   "label": "Weight Details"
+  },
+  {
+   "fieldname": "actual_weight",
+   "fieldtype": "Float",
+   "label": "Actual Weight (Grams)",
+   "precision": "6"
+  },
+  {
+   "fieldname": "equivalent_21_change",
+   "fieldtype": "Float",
+   "label": "Carat 21 Equivalent Change",
+   "precision": "6"
+  },
+  {
+   "fieldname": "balance_after",
+   "fieldtype": "Float",
+   "label": "Balance After (Carat 21 Eq)",
+   "precision": "6"
+  },
+  {
+   "fieldname": "col_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "source_warehouse",
+   "fieldtype": "Link",
+   "label": "Source Warehouse",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "target_warehouse",
+   "fieldtype": "Link",
+   "label": "Target Warehouse",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "sec_links",
+   "fieldtype": "Section Break",
+   "label": "Links"
+  },
+  {
+   "fieldname": "stock_entry_ref",
+   "fieldtype": "Link",
+   "label": "Stock Entry Reference",
+   "options": "Stock Entry"
+  },
+  {
+   "fieldname": "journal_entry_ref",
+   "fieldtype": "Link",
+   "label": "Journal Entry Reference",
+   "options": "Journal Entry"
+  },
+  {
+   "fieldname": "invoice_ref",
+   "fieldtype": "Link",
+   "label": "Invoice Reference",
+   "options": "Sales Invoice"
+  },
+  {
+   "fieldname": "payment_ref",
+   "fieldtype": "Link",
+   "label": "Payment Reference",
+   "options": "Payment Entry"
+  },
+  {
+   "fieldname": "col_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Text",
+   "label": "Notes"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_cancelled",
+   "fieldtype": "Check",
+   "label": "Is Cancelled"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Gold Customer Ledger",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-05-05 02:07:45.667447",
+ "modified_by": "Administrator",
+ "module": "Mu Gold",
+ "name": "Gold Customer Ledger",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
