@@ -1,0 +1,272 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"hdr-gold-ops\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Daily Operations</b></span>\",\"col\":12}},{\"id\":\"sc-sinv\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Gold Invoice\",\"col\":3}},{\"id\":\"sc-grec\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Gold Receipt\",\"col\":3}},{\"id\":\"sc-pay\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Payment Voucher\",\"col\":3}},{\"id\":\"sc-ledger\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Gold Ledger\",\"col\":3}},{\"id\":\"spc-1\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"hdr-reports\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Reports &amp; Analysis</b></span>\",\"col\":12}},{\"id\":\"sc-stmt\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Gold Customer Statement\",\"col\":3}},{\"id\":\"sc-comp\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Comprehensive Statement\",\"col\":3}},{\"id\":\"sc-stk\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Stock by Carat\",\"col\":3}},{\"id\":\"sc-rec\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Gold Reconciliation\",\"col\":3}},{\"id\":\"spc-2\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"hdr-cards\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Documents &amp; Masters</b></span>\",\"col\":12}},{\"id\":\"card-ops\",\"type\":\"card\",\"data\":{\"card_name\":\"Gold Operations\",\"col\":4}},{\"id\":\"card-rpts\",\"type\":\"card\",\"data\":{\"card_name\":\"Gold Reports\",\"col\":4}},{\"id\":\"card-ref\",\"type\":\"card\",\"data\":{\"card_name\":\"Gold References\",\"col\":4}}]",
+ "creation": "2026-05-11 00:00:00.000000",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "gold",
+ "idx": 0,
+ "is_hidden": 0,
+ "label": "Gold",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Gold Operations",
+   "link_count": 0,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Gold Workmanship Invoice",
+   "link_count": 0,
+   "link_to": "Sales Invoice",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Gold Receipt",
+   "link_count": 0,
+   "link_to": "Gold Receipt",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Payment Entry",
+   "link_count": 0,
+   "link_to": "Payment Entry",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Gold Customer Ledger",
+   "link_count": 0,
+   "link_to": "Gold Customer Ledger",
+   "link_type": "DocType",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Gold Reports",
+   "link_count": 0,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "Gold Customer Ledger",
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Gold Customer Statement",
+   "link_count": 0,
+   "link_to": "Gold Customer Statement",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "Gold Customer Ledger",
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Comprehensive Customer Statement",
+   "link_count": 0,
+   "link_to": "Comprehensive Customer Statement",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Stock By Carat",
+   "link_count": 0,
+   "link_to": "Stock By Carat",
+   "link_type": "Report",
+   "onboard": 1,
+   "type": "Link"
+  },
+  {
+   "dependencies": "Gold Customer Ledger",
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Gold At Customers",
+   "link_count": 0,
+   "link_to": "Gold At Customers",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "Gold Customer Ledger",
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Gold Reconciliation",
+   "link_count": 0,
+   "link_to": "Gold Reconciliation",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Gold References",
+   "link_count": 0,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer",
+   "link_count": 0,
+   "link_to": "Customer",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Item",
+   "link_count": 0,
+   "link_to": "Item",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Warehouse",
+   "link_count": 0,
+   "link_to": "Warehouse",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Journal Entry",
+   "link_count": 0,
+   "link_to": "Journal Entry",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "dependencies": "",
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Stock Entry",
+   "link_count": 0,
+   "link_to": "Stock Entry",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-05-11 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Mu Gold",
+ "name": "Gold",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "restrict_to_domain": "",
+ "roles": [
+  {"role": "Gold Sales User"},
+  {"role": "Gold Stock User"},
+  {"role": "Gold Cashier"},
+  {"role": "Gold Manager"},
+  {"role": "Gold Accounts Manager"}
+ ],
+ "sequence_id": 99.0,
+ "shortcuts": [
+  {
+   "color": "Yellow",
+   "format": "{} Open",
+   "label": "Gold Invoice",
+   "link_to": "Sales Invoice",
+   "stats_filter": "{\"is_gold_invoice\": 1, \"docstatus\": 1, \"gold_movement_status\": \"Created\"}",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "format": "{} Receipts",
+   "label": "Gold Receipt",
+   "link_to": "Gold Receipt",
+   "stats_filter": "{\"docstatus\": 1}",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "format": "{} Payments",
+   "label": "Payment Voucher",
+   "link_to": "Payment Entry",
+   "stats_filter": "{\"payment_type\": \"Receive\", \"docstatus\": 1}",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "format": "{} Entries",
+   "label": "Gold Ledger",
+   "link_to": "Gold Customer Ledger",
+   "stats_filter": "{\"docstatus\": 1, \"is_cancelled\": 0}",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "label": "Gold Customer Statement",
+   "link_to": "Gold Customer Statement",
+   "type": "Report"
+  },
+  {
+   "color": "Grey",
+   "label": "Comprehensive Statement",
+   "link_to": "Comprehensive Customer Statement",
+   "type": "Report"
+  },
+  {
+   "color": "Grey",
+   "label": "Stock by Carat",
+   "link_to": "Stock By Carat",
+   "type": "Report"
+  },
+  {
+   "color": "Grey",
+   "label": "Gold Reconciliation",
+   "link_to": "Gold Reconciliation",
+   "type": "Report"
+  }
+ ],
+ "title": "Gold Management",
+ "type": "Workspace"
+}

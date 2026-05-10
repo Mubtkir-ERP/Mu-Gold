@@ -1,4 +1,4 @@
-import frappe
+.import frappe
 
 def run():
     frappe.flags.in_test = True

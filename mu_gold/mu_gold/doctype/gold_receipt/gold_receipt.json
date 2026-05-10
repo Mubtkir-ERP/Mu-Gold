@@ -17,6 +17,7 @@
   "weight",
   "equivalent_21",
   "col_break_2",
+  "source_warehouse",
   "target_warehouse",
   "sec_links",
   "stock_entry_ref",
@@ -26,6 +27,17 @@
   "amended_from"
  ],
  "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "no_copy": 1,
+   "options": "GR-.YYYY.-",
+   "print_hide": 1,
+   "read_only": 0,
+   "reqd": 0,
+   "set_only_once": 1
+  },
   {
    "fieldname": "company",
    "fieldtype": "Link",
@@ -58,6 +70,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Status",
+   "no_copy": 1,
    "options": "\nDraft\nSubmitted\nCancelled"
   },
   {
@@ -89,16 +102,24 @@
    "fieldname": "equivalent_21",
    "fieldtype": "Float",
    "label": "Carat 21 Equivalent",
-   "precision": "6"
+   "precision": "6",
+   "read_only": 1
   },
   {
    "fieldname": "col_break_2",
    "fieldtype": "Column Break"
   },
   {
+   "fieldname": "source_warehouse",
+   "fieldtype": "Link",
+   "label": "Source Warehouse (Customer Vault)",
+   "options": "Warehouse",
+   "reqd": 1
+  },
+  {
    "fieldname": "target_warehouse",
    "fieldtype": "Link",
-   "label": "Target Warehouse",
+   "label": "Target Warehouse (Internal Vault)",
    "options": "Warehouse",
    "reqd": 1
   },
@@ -111,13 +132,17 @@
    "fieldname": "stock_entry_ref",
    "fieldtype": "Link",
    "label": "Stock Entry Reference",
-   "options": "Stock Entry"
+   "no_copy": 1,
+   "options": "Stock Entry",
+   "read_only": 1
   },
   {
    "fieldname": "journal_entry_ref",
    "fieldtype": "Link",
    "label": "Journal Entry Reference",
-   "options": "Journal Entry"
+   "no_copy": 1,
+   "options": "Journal Entry",
+   "read_only": 1
   },
   {
    "fieldname": "col_break_3",
@@ -143,7 +168,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-05-05 02:07:46.184421",
+ "modified": "2026-05-09 21:46:00.000000",
  "modified_by": "Administrator",
  "module": "Mu Gold",
  "name": "Gold Receipt",
@@ -169,5 +194,6 @@
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
- "track_changes": 1
+ "track_changes": 1,
+ "autoname": "naming_series:"
 }

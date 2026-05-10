@@ -22,40 +22,79 @@ Actual Weight,الوزن الفعلي
 Carat 21 Equivalent Change,التغير في مكافئ 21
 Balance After,الرصيد بعد الحركة
 Is Cancelled,ملغى
-Carat 21 Equivalent,مكافئ عيار 21
 Target Warehouse,المستودع الهدف
 Company,الشركة
 Date,التاريخ
 Customer,العميل
-Movement Type,نوع الحركة
-Reference Type,نوع المرجع
-Reference Name,رقم المرجع
-Gold Item,صنف الذهب
-Carat,العيار
 Weight Details,بيانات الوزن
 Actual Weight (Grams),الوزن الفعلي (جرام)
-Carat 21 Equivalent Change,التغير في مكافئ 21
 Balance After (Carat 21 Eq),الرصيد بعد الحركة (مكافئ 21)
-Source Warehouse,المستودع المصدر
-Target Warehouse,المستودع الهدف
 Links,الروابط
-Stock Entry Reference,رابط حركة المخزون
-Journal Entry Reference,رابط القيد المحاسبي
 Invoice Reference,رابط الفاتورة
 Payment Reference,رابط سند القبض
 Notes,الملاحظات
-Is Cancelled,ملغى
-Company,الشركة
-Date,التاريخ
-Customer,العميل
 Status,الحالة
-Gold Details,تفاصيل الذهب
 Returned Gold Item,صنف الذهب المرجع
 Returned Carat,العيار المرجع
 Returned Weight (Grams),الوزن المرجع (جرام)
-Carat 21 Equivalent,مكافئ عيار 21
-Target Warehouse,المستودع الهدف
-Links,الروابط
-Stock Entry Reference,رابط حركة المخزون
-Journal Entry Reference,رابط القيد المحاسبي
-Notes,الملاحظات
+Is Gold Invoice,فاتورة ذهب
+Gold Management,إدارة الذهب
+Daily Operations,العمليات اليومية
+Reports & Analysis,التقارير والتحليل
+Documents & Masters,المستندات والبيانات
+Gold Operations,عمليات الذهب
+Gold Reports,تقارير الذهب
+Gold References,مراجع الذهب
+Gold Workmanship Invoice,فاتورة مشغولات الذهب
+Gold Customer Statement,كشف ذهب العميل
+Comprehensive Customer Statement,الكشف الشامل للعميل
+Stock By Carat,المخزون حسب العيار
+Gold At Customers,الذهب لدى العملاء
+Gold Reconciliation,مطابقة الذهب
+Gold Invoice,فاتورة الذهب
+Payment Voucher,سند القبض
+Gold Ledger,سجل الذهب
+Comprehensive Statement,الكشف الشامل
+Stock by Carat,المخزون حسب العيار
+Gold Sales User,مستخدم مبيعات الذهب
+Gold Stock User,مستخدم مخزون الذهب
+Gold Cashier,أمين صندوق الذهب
+Gold Manager,مدير الذهب
+Gold Accounts Manager,مدير حسابات الذهب
+Open,مفتوح
+Receipts,سندات استلام
+Payments,سندات قبض
+Entries,حركات
+ISSUE,صرف
+RECEIPT,استلام
+Created,تم الإنشاء
+Cancelled,ملغى
+Completed,مكتمل
+Insufficient stock in warehouse '{0}'. Available: {1}g Required: {2}g.,مخزون غير كافٍ في المستودع '{0}'. المتاح: {1} جرام المطلوب: {2} جرام.
+Gold weight must be greater than zero,وزن الذهب يجب أن يكون أكبر من صفر
+Workmanship price per gram must be greater than zero,سعر المشغول لكل جرام يجب أن يكون أكبر من صفر
+Returned weight must be greater than zero,وزن المرجع يجب أن يكون أكبر من صفر
+Returned Gold Eq-21 exceeds customer open balance,مكافئ 21 للذهب المُرتجع يتجاوز رصيد العميل المفتوح
+Source Warehouse (Customer Vault),مستودع المصدر (عهدة العميل)
+Target Warehouse (Internal Vault),مستودع الهدف (المخزن الداخلي)
+Movement,نوع الحركة
+Ref Type,نوع المرجع
+Ref No,رقم المرجع
+Item,الصنف
+Actual Weight (g),الوزن الفعلي (جرام)
+Eq-21 Change,التغيير بمكافئ 21
+Running Balance (Eq-21),الرصيد الجاري (مكافئ 21)
+Customer Name,اسم العميل
+Financial Debt (Currency),الذمة المالية
+Total Gold Issued (Eq 21),إجمالي الذهب المصروف (مكافئ 21)
+Total Gold Received (Eq 21),إجمالي الذهب المُستلم (مكافئ 21)
+Gold Balance (Eq 21),رصيد الذهب (مكافئ 21)
+If Pay In 18k (Grams),للسداد بعيار 18 (جرام)
+If Pay In 21k (Grams),للسداد بعيار 21 (جرام)
+If Pay In 22k (Grams),للسداد بعيار 22 (جرام)
+If Pay In 24k (Grams),للسداد بعيار 24 (جرام)
+Eq 21 (Operational),مكافئ 21 (التشغيلي)
+Accounting Balance (Currency),الرصيد المحاسبي
+Actual Qty (Grams),الكمية الفعلية (جرام)
+Warehouse,المستودع
+Weight,الوزن

@@ -1,0 +1,34 @@
+{
+ "add_total_row": 0,
+ "add_translate_data": 0,
+ "columns": [],
+ "creation": "2026-05-05 11:19:39.268003",
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": null,
+ "modified": "2026-05-10 23:43:00.659212",
+ "modified_by": "Administrator",
+ "module": "Mu Gold",
+ "name": "Gold Customer Statement",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Gold Customer Ledger",
+ "report_name": "Gold Customer Statement",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "Gold Sales User"
+  },
+  {
+   "role": "Gold Manager"
+  },
+  {
+   "role": "Gold Accounts Manager"
+  }
+ ],
+ "timeout": 0
+}

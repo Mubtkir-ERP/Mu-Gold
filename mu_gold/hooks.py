@@ -137,13 +137,18 @@ app_license = "mit"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"Sales Invoice": {
+		"validate": "mu_gold.mu_gold.controllers.sales_invoice.validate",
+		"on_submit": "mu_gold.mu_gold.controllers.sales_invoice.on_submit",
+		"on_cancel": "mu_gold.mu_gold.controllers.sales_invoice.on_cancel"
+	},
+	"Gold Receipt": {
+		"validate": "mu_gold.mu_gold.controllers.gold_receipt.validate",
+		"on_submit": "mu_gold.mu_gold.controllers.gold_receipt.on_submit",
+		"on_cancel": "mu_gold.mu_gold.controllers.gold_receipt.on_cancel"
+	}
+}
 
 # Scheduled Tasks
 # ---------------

@@ -6,4 +6,5 @@ from frappe.model.document import Document
 
 
 class GoldCustomerLedger(Document):
-	pass
+	def on_cancel(self):
+		self.db_set('is_cancelled', 1)
