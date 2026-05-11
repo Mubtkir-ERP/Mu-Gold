@@ -287,6 +287,6 @@ doc_events = {
 fixtures = [
     {
         "dt": "Workspace",
-        "filters": [["name", "=", "Gold"]]
+        "filters": [["name", "=", "Gold Management"]]
     }
 ]
