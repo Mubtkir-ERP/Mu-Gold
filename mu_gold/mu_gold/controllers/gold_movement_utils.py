@@ -82,115 +82,178 @@ def create_gold_ledger_entry(doc, movement_type, ref_type, ref_name, item, carat
     ledg.submit()
     return ledg.name
 
+def _get_custody_account(carat, company):
+    """البحث عن حساب ذهب لدى العملاء بالعيار المحدد"""
+    carat = str(carat)
+    # محاولة 1: حساب يحتوي كلمة 'عهدة' ورقم العيار
+    acc = frappe.db.get_value("Account", {
+        "account_name": ["like", f"%عهدة%{carat}%"],
+        "company": company,
+        "is_group": 0
+    })
+    if acc:
+        return acc
+    # محاولة 2: حساب يحتوي 'ذهب لدى العملاء' ورقم العيار
+    acc = frappe.db.get_value("Account", {
+        "account_name": ["like", f"%لدى العملاء%{carat}%"],
+        "company": company,
+        "is_group": 0
+    })
+    if acc:
+        return acc
+    # محاولة 3: أي حساب عهدة
+    return frappe.db.get_value("Account", {
+        "account_name": ["like", "%عهدة ذهب%"],
+        "company": company,
+        "is_group": 0
+    })
+
+
+def _get_stock_account(carat, company):
+    """البحث عن حساب مخزون بالعيار المحدد"""
+    carat = str(carat)
+    acc = frappe.db.get_value("Account", {
+        "account_type": "Stock",
+        "account_name": ["like", f"%{carat}%"],
+        "company": company,
+        "is_group": 0
+    })
+    if not acc:
+        acc = frappe.db.get_value("Account", {
+            "account_type": "Stock",
+            "company": company,
+            "is_group": 0
+        })
+    return acc
+
+
+def _get_workmanship_amount_for_receipt(doc):
+    """
+    احتساب قيمة المشغولات المتناسبة مع وزن الاستلام.
+
+    المنطق:
+      - نجلب آخر فاتورة مشغولات مفتوحة للعميل بنفس العيار
+      - نحسب: سعر الجرام × وزن الاستلام
+      - إذا لم تتوفر فاتورة، نستخدم متوسط سعر الجرام من كل فواتير العميل
+      - الحد الأدنى: 0.01 ريال لتجنب قيد بصفر
+    """
+    customer = doc.customer
+    carat    = str(doc.carat)
+    weight   = flt(doc.weight)
+
+    # البحث عن فواتير مشغولات لهذا العميل بنفس العيار (مرتحلة)
+    invoices = frappe.db.sql("""
+        SELECT name, gold_weight, price_per_gram, total_workmanship
+        FROM `tabSales Invoice`
+        WHERE customer = %s
+          AND gold_carat = %s
+          AND is_gold_invoice = 1
+          AND docstatus = 1
+        ORDER BY posting_date DESC
+        LIMIT 5
+    """, (customer, carat), as_dict=True)
+
+    if invoices:
+        # متوسط سعر الجرام من آخر 5 فواتير
+        total_price = sum(flt(inv.price_per_gram) for inv in invoices)
+        avg_price   = total_price / len(invoices) if invoices else 0
+        amount      = round(weight * avg_price, 2) if avg_price else 0
+        return amount if amount > 0 else None
+
+    # fallback: أي فاتورة للعميل بأي عيار
+    row = frappe.db.sql("""
+        SELECT price_per_gram FROM `tabSales Invoice`
+        WHERE customer = %s AND is_gold_invoice = 1 AND docstatus = 1
+        ORDER BY posting_date DESC LIMIT 1
+    """, customer, as_dict=True)
+    if row and flt(row[0].price_per_gram) > 0:
+        return round(weight * flt(row[0].price_per_gram), 2)
+
+    return None
+
+
 def create_journal_entry_for_issue(doc):
     je = frappe.new_doc("Journal Entry")
     je.voucher_type = "Journal Entry"
     je.company = doc.company
     je.posting_date = doc.posting_date
     je.user_remark = f"Gold Value Transfer to Custody (Carat {doc.gold_carat}): {doc.name}"
-    
-    # تحديد العيار للبحث عن الحسابات المناسبة
+
     carat = str(doc.gold_carat)
-    
-    # 1. البحث عن حساب المخزون لنفس العيار
-    stock_account = frappe.db.get_value("Account", {
-        "account_type": "Stock", 
-        "account_name": ["like", f"%{carat}%"],
-        "company": doc.company,
-        "is_group": 0
-    })
-    if not stock_account: # Fallback
-        stock_account = frappe.db.get_value("Account", {"account_type": "Stock", "company": doc.company, "is_group": 0})
-    
-    # 2. البحث عن حساب عهدة ذهب لنفس العيار
-    custody_account = frappe.db.get_value("Account", {
-        "account_name": ["like", f"%عهدة%"],
-        "account_name": ["like", f"%{carat}%"],
-        "company": doc.company,
-        "is_group": 0
-    })
-    if not custody_account: # Fallback 1: أي حساب عهدة
-        custody_account = frappe.db.get_value("Account", {"account_name": ["like", "%عهدة ذهب%"], "company": doc.company})
-    if not custody_account: # Fallback 2: أي حساب أصول
-        custody_account = frappe.db.get_value("Account", {"account_type": "Asset", "company": doc.company, "is_group": 0})
+    stock_account   = _get_stock_account(carat, doc.company)
+    custody_account = _get_custody_account(carat, doc.company)
 
     if not stock_account or not custody_account:
         return None
-        
-    val_rate = flt(frappe.db.get_value("Stock Ledger Entry", 
-        {"voucher_type": "Stock Entry", "voucher_no": doc.stock_entry_ref, "item_code": doc.gold_item, "warehouse": doc.source_warehouse}, 
-        "valuation_rate"))
-    if not val_rate: val_rate = 1.0
-    
-    amount = flt(doc.gold_weight) * val_rate
-    
-    # القيد: مدين (عهدة ذهب نفس العيار) / دائن (مخزون كسر نفس العيار)
+
+    # القيمة = سعر المشغول × الوزن (من الفاتورة مباشرة)
+    amount = round(flt(doc.gold_weight) * flt(doc.price_per_gram), 2)
+    if amount <= 0:
+        amount = 1.0  # قيمة رمزية لتجنب قيد بصفر
+
+    # القيد: مدين (ذهب لدى العملاء) / دائن (مخزون)
     je.append("accounts", {
-        "account": custody_account, 
-        "debit_in_account_currency": amount, 
+        "account": custody_account,
+        "debit_in_account_currency": amount,
         "credit_in_account_currency": 0,
-        "user_remark": f"Gold Carat {carat} issued to {doc.customer}"
+        "user_remark": f"Workmanship value — Carat {carat} issued to {doc.customer}"
     })
     je.append("accounts", {
-        "account": stock_account, 
-        "debit_in_account_currency": 0, 
+        "account": stock_account,
+        "debit_in_account_currency": 0,
         "credit_in_account_currency": amount
     })
     je.insert(ignore_permissions=True)
     je.submit()
     return je.name
 
+
 def create_journal_entry_for_receipt(doc):
+    """
+    القيد العكسي عند استلام الذهب من العميل:
+      مدين:  مخزون كسر ذهب [عيار]        ← يرجع للمخزون
+      دائن:  ذهب لدى العملاء [عيار]       ← تنخفض العهدة
+
+    المبلغ = قيمة المشغولات النسبية (سعر الجرام × وزن المُرجع)
+    """
     je = frappe.new_doc("Journal Entry")
     je.voucher_type = "Journal Entry"
     je.company = doc.company
     je.posting_date = doc.date
-    je.user_remark = f"Gold Return from Custody (Carat {doc.carat}): {doc.name}"
-    
+    je.user_remark = f"Reverse Workmanship — Gold Return Carat {doc.carat}: {doc.name}"
+
     carat = str(doc.carat)
-    
-    # 1. حساب المخزون نفس العيار
-    stock_account = frappe.db.get_value("Account", {
-        "account_type": "Stock", 
-        "account_name": ["like", f"%{carat}%"],
-        "company": doc.company,
-        "is_group": 0
-    })
-    if not stock_account:
-        stock_account = frappe.db.get_value("Account", {"account_type": "Stock", "company": doc.company, "is_group": 0})
-        
-    # 2. حساب عهدة نفس العيار
-    custody_account = frappe.db.get_value("Account", {
-        "account_name": ["like", f"%عهدة%"],
-        "account_name": ["like", f"%{carat}%"],
-        "company": doc.company,
-        "is_group": 0
-    })
-    if not custody_account:
-        custody_account = frappe.db.get_value("Account", {"account_name": ["like", "%عهدة ذهب%"], "company": doc.company})
-    if not custody_account:
-        custody_account = frappe.db.get_value("Account", {"account_type": "Asset", "company": doc.company, "is_group": 0})
+    stock_account   = _get_stock_account(carat, doc.company)
+    custody_account = _get_custody_account(carat, doc.company)
 
     if not stock_account or not custody_account:
+        frappe.log_error(
+            title="Gold Receipt — JE Accounts Not Found",
+            message=f"Could not find stock/custody accounts for Carat {carat}, Company {doc.company}"
+        )
         return None
-        
-    val_rate = flt(frappe.db.get_value("Stock Ledger Entry", 
-        {"voucher_type": "Stock Entry", "voucher_no": doc.stock_entry_ref, "item_code": doc.gold_item, "warehouse": doc.target_warehouse}, 
-        "valuation_rate"))
-    if not val_rate: val_rate = 1.0
-    
-    amount = flt(doc.weight) * val_rate
-    
+
+    # احتساب قيمة المشغولات المقابلة للوزن المُرجع
+    amount = _get_workmanship_amount_for_receipt(doc)
+    if not amount or amount <= 0:
+        frappe.log_error(
+            title="Gold Receipt — JE Amount Warning",
+            message=f"No workmanship price found for customer {doc.customer} carat {carat}. JE skipped."
+        )
+        return None
+
+    # القيد العكسي: مدين مخزون / دائن عهدة
     je.append("accounts", {
-        "account": stock_account, 
-        "debit_in_account_currency": amount, 
-        "credit_in_account_currency": 0
+        "account": stock_account,
+        "debit_in_account_currency": amount,
+        "credit_in_account_currency": 0,
+        "user_remark": f"Gold Carat {carat} returned by {doc.customer} — {doc.weight}g"
     })
     je.append("accounts", {
-        "account": custody_account, 
-        "debit_in_account_currency": 0, 
+        "account": custody_account,
+        "debit_in_account_currency": 0,
         "credit_in_account_currency": amount,
-        "user_remark": f"Gold Carat {carat} returned from {doc.customer}"
+        "user_remark": f"Reverse workmanship value — {doc.name}"
     })
     je.insert(ignore_permissions=True)
     je.submit()
