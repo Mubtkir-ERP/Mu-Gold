@@ -282,3 +282,11 @@ doc_events = {
 #         ]
 #     },
 # ]
+
+# Export the Gold workspace so it is auto-imported on bench migrate
+fixtures = [
+    {
+        "dt": "Workspace",
+        "filters": [["name", "=", "Gold"]]
+    }
+]
