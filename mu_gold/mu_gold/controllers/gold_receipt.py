@@ -41,15 +41,44 @@ def validate(doc, method):
             )
 
 
+    # ── Custody warehouse stock check (Multi-UOM tracks base units in ledger bins) ─
+    if doc.source_warehouse:
+        allow_negative = flt(frappe.db.get_single_value("Stock Settings", "allow_negative_stock"))
+        if not allow_negative:
+            check_item = "ذهب كسر" if frappe.db.exists("Item", "ذهب كسر") else doc.gold_item
+            available = flt(frappe.db.get_value(
+                "Bin",
+                {"item_code": check_item, "warehouse": doc.source_warehouse},
+                "actual_qty",
+            ))
+            if available < doc.equivalent_21:
+                frappe.throw(
+                    _("Insufficient stock of unified base item in custody warehouse '{0}'. Available Base Units: {1}, Required Base Units: {2}.").format(
+                        doc.source_warehouse,
+                        round(available, 6),
+                        round(doc.equivalent_21, 6),
+                    )
+                )
+
+
 def on_submit(doc, method):
-    # ── 1. Stock Entry ─────────────────────────────
+    # ── 1. Stock Entry (Multi-UOM pattern returning physical weight weighted by Factor) ─
+    std_item = "ذهب كسر" if frappe.db.exists("Item", "ذهب كسر") else doc.gold_item
+    uom_name = doc.carat if doc.carat and doc.carat.startswith("جرام-") else "جرام-21"
+    carat_str = uom_name.replace("جرام-", "")
+    
+    factors = {"24": 1.142857, "22": 1.047619, "21": 1.0, "18": 0.857143}
+    factor = factors.get(carat_str, 1.0)
+
     stock_entry_id = create_stock_entry(
         doc=doc,
         purpose="Material Transfer",
         source_warehouse=doc.source_warehouse,
         target_warehouse=doc.target_warehouse,
-        item_code=doc.gold_item,
+        item_code=std_item,
         qty=doc.weight,
+        uom=uom_name,
+        conversion_factor=factor,
     )
 
     # ── 2. Journal Entry ───────────────────────────────────────────────────────
@@ -61,6 +90,9 @@ def on_submit(doc, method):
         frappe.log_error(title="Gold JE Warning — Receipt", message=str(e))
 
     # ── 3. Gold Customer Ledger (negative change) ──────────────
+    if not doc.equivalent_21:
+        doc.equivalent_21 = get_equivalent_21(doc.weight, doc.carat)
+        
     eq_change = -1 * flt(doc.equivalent_21)
 
     ledger_id = create_gold_ledger_entry(
@@ -80,6 +112,7 @@ def on_submit(doc, method):
     )
 
     # ── 4. Save references ─────────────────────────────────────────────────────
+    doc.db_set("equivalent_21", doc.equivalent_21)
     doc.db_set("stock_entry_ref", stock_entry_id)
     if journal_entry_id:
         doc.db_set("journal_entry_ref", journal_entry_id)

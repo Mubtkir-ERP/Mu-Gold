@@ -6,9 +6,11 @@ def get_equivalent_21(weight, carat):
     """Calculate Carat 21 equivalent weight correctly"""
     if not carat:
         return 0.0
-    return flt(weight) * flt(carat) / 21.0
+    carat_str = str(carat).replace("جرام-", "").strip()
+    carat_num = flt(carat_str) if carat_str else 21.0
+    return flt(weight) * carat_num / 21.0
 
-def create_stock_entry(doc, purpose, source_warehouse, target_warehouse, item_code, qty):
+def create_stock_entry(doc, purpose, source_warehouse, target_warehouse, item_code, qty, uom=None, conversion_factor=None):
     se = frappe.new_doc("Stock Entry")
     se.purpose = purpose
     se.stock_entry_type = purpose
@@ -16,17 +18,70 @@ def create_stock_entry(doc, purpose, source_warehouse, target_warehouse, item_co
     se.company = doc.company
     se.add_to_transit = 0
     
-    se.append("items", {
+    item_row = {
         "item_code": item_code,
-        "qty": qty,
+        "qty": flt(qty),
         "s_warehouse": source_warehouse,
         "t_warehouse": target_warehouse,
         "allow_zero_valuation_rate": 1
-    })
+    }
+    if uom:
+        item_row["uom"] = uom
+    if conversion_factor:
+        item_row["conversion_factor"] = flt(conversion_factor)
+        
+    se.append("items", item_row)
     
     se.insert(ignore_permissions=True)
     se.submit()
     return se.name
+
+
+def setup_unified_gold_item():
+    """Ensure standard base UOMs and the unified gold item exist in the database."""
+    uoms = ["جرام-24", "جرام-22", "جرام-21", "جرام-18"]
+    for u in uoms:
+        if not frappe.db.exists("UOM", u):
+            doc = frappe.new_doc("UOM")
+            doc.uom_name = u
+            doc.enabled = 1
+            doc.must_be_whole_number = 0
+            doc.db_set("is_gold_uom", 1)
+            doc.insert(ignore_permissions=True)
+        else:
+            frappe.db.set_value("UOM", u, "is_gold_uom", 1)
+
+    item_code = "ذهب كسر"
+    if not frappe.db.exists("Item", item_code):
+        item = frappe.new_doc("Item")
+        item.item_code = item_code
+        item.item_name = item_code
+        item.item_group = "ذهب" if frappe.db.exists("Item Group", "ذهب") else "Products"
+        item.stock_uom = "جرام-21"
+        item.is_stock_item = 1
+        item.valuation_method = "Moving Average"
+        item.db_set("is_default_gold_item", 1)
+        
+        # Populate default warehouses if any gold warehouse exists
+        source_wh = frappe.db.get_value("Warehouse", {"warehouse_name": ["like", "%ذهب%"], "is_group": 0}, "name")
+        target_wh = frappe.db.get_value("Warehouse", {"warehouse_name": ["like", "%عهدة%"], "is_group": 0}, "name")
+        if source_wh:
+            item.db_set("default_source_warehouse", source_wh)
+        if target_wh:
+            item.db_set("default_target_warehouse", target_wh)
+        
+        conversions = [
+            {"uom": "جرام-24", "conversion_factor": 1.142857},
+            {"uom": "جرام-22", "conversion_factor": 1.047619},
+            {"uom": "جرام-21", "conversion_factor": 1.0},
+            {"uom": "جرام-18", "conversion_factor": 0.857143},
+        ]
+        for c in conversions:
+            item.append("uoms", c)
+            
+        item.insert(ignore_permissions=True)
+    else:
+        frappe.db.set_value("Item", item_code, "is_default_gold_item", 1)
 
 def get_customer_gold_balance(customer, company):
     last_entry = frappe.db.get_list("Gold Customer Ledger", 
@@ -258,3 +313,21 @@ def create_journal_entry_for_receipt(doc):
     je.insert(ignore_permissions=True)
     je.submit()
     return je.name
+
+
+def validate_item(doc, method):
+    """
+    Validate Item record when saved/updated:
+    1. If is_default_gold_item is checked, ensure default_source_warehouse and default_target_warehouse are provided.
+    2. Ensure no other Item has is_default_gold_item checked (throw an error to prevent multiple defaults).
+    """
+    if flt(doc.get("is_default_gold_item")):
+        if not doc.get("default_source_warehouse"):
+            frappe.throw(_("Default Source Warehouse is mandatory when Item is set as the Default Gold Item."))
+        if not doc.get("default_target_warehouse"):
+            frappe.throw(_("Default Custodial Warehouse is mandatory when Item is set as the Default Gold Item."))
+            
+        # Check if any other item is already set as default
+        existing_default = frappe.db.get_value("Item", {"is_default_gold_item": 1, "name": ["!=", doc.name]}, "name")
+        if existing_default:
+            frappe.throw(_("Item '{0}' is already set as the Default Gold Item. Please uncheck it first before setting a new default.").format(existing_default))

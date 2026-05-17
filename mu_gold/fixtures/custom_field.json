@@ -70,9 +70,9 @@
   "name": "Sales Invoice-gold_carat",
   "dt": "Sales Invoice",
   "fieldname": "gold_carat",
-  "fieldtype": "Data",
+  "fieldtype": "Link",
   "label": "Carat",
-  "options": null,
+  "options": "UOM",
   "insert_after": "gold_item",
   "depends_on": "eval:doc.is_gold_invoice==1",
   "read_only": 0,
@@ -372,5 +372,51 @@
   "hidden": 0,
   "print_hide": 0,
   "search_index": 0
+ },
+ {
+  "doctype": "Custom Field",
+  "name": "UOM-is_gold_uom",
+  "dt": "UOM",
+  "fieldname": "is_gold_uom",
+  "fieldtype": "Check",
+  "label": "Appears in Gold Invoice",
+  "options": null,
+  "insert_after": "must_be_whole_number",
+  "read_only": 0,
+  "default": "0"
+ },
+ {
+  "doctype": "Custom Field",
+  "name": "Item-is_default_gold_item",
+  "dt": "Item",
+  "fieldname": "is_default_gold_item",
+  "fieldtype": "Check",
+  "label": "Default Gold Item",
+  "options": null,
+  "insert_after": "valuation_method",
+  "read_only": 0,
+  "default": "0"
+ },
+ {
+  "doctype": "Custom Field",
+  "name": "Item-default_source_warehouse",
+  "dt": "Item",
+  "fieldname": "default_source_warehouse",
+  "fieldtype": "Link",
+  "label": "Default Source Warehouse",
+  "options": "Warehouse",
+  "insert_after": "is_default_gold_item",
+  "read_only": 0
+ },
+ {
+  "doctype": "Custom Field",
+  "name": "Item-default_target_warehouse",
+  "dt": "Item",
+  "fieldname": "default_target_warehouse",
+  "fieldtype": "Link",
+  "label": "Default Custodial Warehouse",
+  "options": "Warehouse",
+  "insert_after": "default_source_warehouse",
+  "read_only": 0
  }
 ]

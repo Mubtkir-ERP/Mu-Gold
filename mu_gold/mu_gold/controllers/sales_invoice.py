@@ -43,22 +43,67 @@ def validate(doc, method):
     doc.equivalent_21 = get_equivalent_21(doc.gold_weight, doc.gold_carat)
     doc.total_workmanship = round(doc.gold_weight * doc.price_per_gram, 2)
 
-    # ── Warehouse stock check ─────────────────────────────────────────────────
-    if doc.source_warehouse and doc.gold_item:
+    # ── Validate warehouses are different ────────────────────────────────────
+    if doc.source_warehouse and doc.target_warehouse:
+        if doc.source_warehouse == doc.target_warehouse:
+            frappe.throw(
+                _("Source Warehouse and Target Warehouse cannot be the same. "
+                  "Source = stock vault, Target = customer custody warehouse.")
+            )
+
+    # ── Enforce child table: override pricing rules and margins completely ────
+    #    ERPNext's pricing rule engine runs BEFORE validate and can alter the
+    #    rate/margin on the item row. We forcefully reset everything here so
+    #    the invoice always reflects exactly what the user typed in price_per_gram.
+    doc.ignore_pricing_rule = 1  # prevent re-application on subsequent saves
+    if doc.items:
+        price = flt(doc.price_per_gram)
+        qty   = flt(doc.gold_weight)
+        for row in doc.items:
+            if row.item_code == doc.gold_item:
+                # Clear any margin / discount that pricing rules may have injected
+                row.margin_type              = ""
+                row.margin_rate_or_amount    = 0
+                row.rate_with_margin         = price
+                row.base_rate_with_margin    = price
+                row.discount_percentage      = 0
+                row.discount_amount          = 0
+                row.distributed_discount_amount = 0
+                row.pricing_rules            = ""
+                # Enforce the correct rate
+                row.qty                = qty
+                row.rate               = price
+                row.price_list_rate    = price
+                row.base_price_list_rate = price
+                row.stock_uom_rate     = price
+                row.amount             = flt(qty * price)
+                row.net_rate           = price
+                row.net_amount         = flt(qty * price)
+                row.base_rate          = price
+                row.base_amount        = flt(qty * price)
+                row.base_net_rate      = price
+                row.base_net_amount    = flt(qty * price)
+
+        # Recalculate header totals to match enforced row values
+        if hasattr(doc, "calculate_taxes_and_totals"):
+            doc.calculate_taxes_and_totals()
+
+    # ── Warehouse stock check (Multi-UOM tracks base units in ledger bins) ────
+    if doc.source_warehouse:
         allow_negative = flt(frappe.db.get_single_value("Stock Settings", "allow_negative_stock"))
         if not allow_negative:
+            check_item = "ذهب كسر" if frappe.db.exists("Item", "ذهب كسر") else doc.gold_item
             available = flt(frappe.db.get_value(
                 "Bin",
-                {"item_code": doc.gold_item, "warehouse": doc.source_warehouse},
+                {"item_code": check_item, "warehouse": doc.source_warehouse},
                 "actual_qty",
             ))
-            if available < doc.gold_weight:
-                # رمي خطأ مخصص يُلتقط في الاختبارات
+            if available < doc.equivalent_21:
                 frappe.throw(
-                    _("Insufficient stock in warehouse '{0}'. Available: {1}g, Required: {2}g.").format(
+                    _("Insufficient stock of unified base item in warehouse '{0}'. Available Base Units: {1}, Required Base Units: {2}.").format(
                         doc.source_warehouse,
                         round(available, 6),
-                        doc.gold_weight,
+                        round(doc.equivalent_21, 6),
                     )
                 )
 
@@ -67,7 +112,7 @@ def on_submit(doc, method):
     """
     When Sales Invoice is submitted:
     1. Guard against duplicate execution.
-    2. Create Stock Entry (Material Transfer) for gold issuance.
+    2. Create Stock Entry using the Multi-UOM pattern (Unified Item + chosen UOM/Factor).
     3. Create Journal Entry: Dr Custody / Cr Stock.
     4. Create Gold Customer Ledger entry (ISSUE).
     5. Save generated document references back to the invoice.
@@ -82,14 +127,23 @@ def on_submit(doc, method):
               "Cancel and amend if you need to make changes.")
         )
 
-    # ── 1. Stock Entry ─────────────────────────────────────────────────────────
+    # ── 1. Stock Entry (Multi-UOM pattern with secondary UOM and conversion factor) ─
+    std_item = "ذهب كسر" if frappe.db.exists("Item", "ذهب كسر") else doc.gold_item
+    uom_name = doc.gold_carat if doc.gold_carat and doc.gold_carat.startswith("جرام-") else "جرام-21"
+    carat_str = uom_name.replace("جرام-", "")
+    
+    factors = {"24": 1.142857, "22": 1.047619, "21": 1.0, "18": 0.857143}
+    factor = factors.get(carat_str, 1.0)
+
     stock_entry_id = create_stock_entry(
         doc=doc,
         purpose="Material Transfer",
         source_warehouse=doc.source_warehouse,
         target_warehouse=doc.target_warehouse,
-        item_code=doc.gold_item,
+        item_code=std_item,
         qty=doc.gold_weight,
+        uom=uom_name,
+        conversion_factor=factor,
     )
 
     # ── 2. Journal Entry ───────────────────────────────────────────────────────
@@ -101,6 +155,9 @@ def on_submit(doc, method):
         frappe.log_error(title="Gold JE Warning — Issue", message=str(e))
 
     # ── 3. Gold Customer Ledger ────────────────────────────────────────────────
+    if not doc.equivalent_21:
+        doc.equivalent_21 = get_equivalent_21(doc.gold_weight, doc.gold_carat)
+        
     ledger_id = create_gold_ledger_entry(
         doc=doc,
         movement_type="ISSUE",
@@ -117,6 +174,7 @@ def on_submit(doc, method):
     )
 
     # ── 4. Update invoice with references ─────────────────────────────────────
+    doc.db_set("equivalent_21", doc.equivalent_21)
     doc.db_set("stock_entry_ref", stock_entry_id)
     if journal_entry_id:
         doc.db_set("journal_entry_ref", journal_entry_id)

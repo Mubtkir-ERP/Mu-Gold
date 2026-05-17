@@ -1,15 +1,16 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "naming_series:",
  "creation": "2026-05-05 02:07:46.184421",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "company",
-  "date",
   "customer",
+  "company",
   "col_break_1",
+  "date",
   "status",
   "sec_gold",
   "gold_item",
@@ -24,18 +25,18 @@
   "journal_entry_ref",
   "col_break_3",
   "notes",
-  "amended_from"
+  "amended_from",
+  "naming_series"
  ],
  "fields": [
   {
    "fieldname": "naming_series",
    "fieldtype": "Select",
+   "hidden": 1,
    "label": "Naming Series",
    "no_copy": 1,
    "options": "GR-.YYYY.-",
    "print_hide": 1,
-   "read_only": 0,
-   "reqd": 0,
    "set_only_once": 1
   },
   {
@@ -68,7 +69,7 @@
   {
    "fieldname": "status",
    "fieldtype": "Select",
-   "in_list_view": 1,
+   "hidden": 1,
    "label": "Status",
    "no_copy": 1,
    "options": "\nDraft\nSubmitted\nCancelled"
@@ -81,19 +82,23 @@
   {
    "fieldname": "gold_item",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Returned Gold Item",
    "options": "Item",
    "reqd": 1
   },
   {
    "fieldname": "carat",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Returned Carat",
+   "options": "UOM",
    "reqd": 1
   },
   {
    "fieldname": "weight",
    "fieldtype": "Float",
+   "in_list_view": 1,
    "label": "Returned Weight (Grams)",
    "precision": "6",
    "reqd": 1
@@ -168,7 +173,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-05-09 21:46:00.000000",
+ "modified": "2026-05-17 00:25:15.367319",
  "modified_by": "Administrator",
  "module": "Mu Gold",
  "name": "Gold Receipt",
@@ -194,6 +199,5 @@
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
- "track_changes": 1,
- "autoname": "naming_series:"
+ "track_changes": 1
 }
