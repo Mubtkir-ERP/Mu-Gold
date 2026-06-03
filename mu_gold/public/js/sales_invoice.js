@@ -4,7 +4,12 @@ frappe.ui.form.on('Sales Invoice', {
     },
     is_gold_invoice: function(frm) {
         setup_gold_invoice_behavior(frm);
-        if (frm.doc.is_gold_invoice) {
+        if (frm.doc.is_gold_invoice && frm.doc.customer && !frm.doc.gold_item) {
+            fetch_default_gold_metadata(frm);
+        }
+    },
+    customer: function(frm) {
+        if (frm.doc.is_gold_invoice && frm.doc.customer && !frm.doc.gold_item) {
             fetch_default_gold_metadata(frm);
         }
     },
@@ -57,10 +62,7 @@ function setup_gold_invoice_behavior(frm) {
         // Hide the items table to prevent manual tampering for gold invoices
         frm.set_df_property("items", "hidden", 1);
 
-        // Fetch if not set yet
-        if (!frm.doc.gold_item || !frm.doc.source_warehouse) {
-            fetch_default_gold_metadata(frm);
-        }
+
     } else {
         frm.set_df_property("source_warehouse", "read_only", 0);
         frm.set_df_property("target_warehouse", "read_only", 0);
