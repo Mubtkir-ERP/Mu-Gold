@@ -43,7 +43,10 @@ app_license = "mit"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-doctype_js = {"Sales Invoice" : "public/js/sales_invoice.js"}
+doctype_js = {
+    "Sales Invoice" : "public/js/sales_invoice.js",
+    "Purchase Invoice" : "public/js/purchase_invoice.js"
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -289,10 +292,42 @@ doc_events = {
 #     },
 # ]
 
-# Export the Gold workspace so it is auto-imported on bench migrate
+# Export the Gold workspace and Property Setters so it is auto-imported on bench migrate
 fixtures = [
     {
         "dt": "Workspace",
         "filters": [["name", "=", "Gold Management"]]
+    },
+    {
+        "dt": "Property Setter",
+        "filters": [
+            ["doc_type", "in", ["Sales Invoice", "Purchase Invoice"]]
+        ]
+    },
+    {
+        "dt": "Custom Field",
+        "filters": [
+            ["dt", "in", ["Sales Invoice", "Purchase Invoice"]],
+            ["fieldname", "in", [
+                "is_gold_invoice",
+                "gold_section",
+                "gold_item",
+                "gold_item_description",
+                "gold_carat",
+                "gold_weight",
+                "equivalent_21",
+                "gold_col_break",
+                "price_per_gram",
+                "total_workmanship",
+                "source_warehouse",
+                "target_warehouse",
+                "gold_status_section",
+                "gold_movement_created",
+                "gold_movement_status",
+                "gold_col_break_2",
+                "stock_entry_ref",
+                "journal_entry_ref",
+            ]]
+        ]
     }
 ]
