@@ -1,6 +1,10 @@
 frappe.ui.form.on('Purchase Invoice', {
     refresh: function(frm) {
         setup_gold_invoice_behavior(frm);
+        setTimeout(() => {
+            if (frm.get_field("taxes_section")) frm.get_field("taxes_section").collapse();
+            if (frm.get_field("section_break_44")) frm.get_field("section_break_44").collapse();
+        }, 50);
     },
     is_gold_invoice: function(frm) {
         setup_gold_invoice_behavior(frm);
